@@ -13,5 +13,5 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @SelectClasspathResource("features/ordering")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.univcotedazur.simpletcfs.cucumber.ordering")
-public class OrderingCucumberRunnerTest { // IT suffix on test classes make them "Integration Test" run by "verify" goal in maven (see pom.xml)
+public class OrderingCucumberRunnerIT { // IT suffix on test classes make them "Integration Test" run by "verify" goal in maven (see pom.xml)
 }
