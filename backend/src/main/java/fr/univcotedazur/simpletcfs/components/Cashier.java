@@ -10,11 +10,13 @@ import fr.univcotedazur.simpletcfs.interfaces.Payment;
 import fr.univcotedazur.simpletcfs.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
+@Transactional
 public class Cashier implements Payment {
 
     private Bank bank;
@@ -39,9 +41,10 @@ public class Cashier implements Payment {
         if (!status) {
             throw new PaymentException(customer.getName(), price);
         }
-        orderRepository.save(order, order.getId());
-        kitchen.process(order);
-        return order;
+        customer.add(order);
+        Order savedOrder = orderRepository.save(order);
+        kitchen.process(savedOrder);
+        return savedOrder;
     }
 
 }

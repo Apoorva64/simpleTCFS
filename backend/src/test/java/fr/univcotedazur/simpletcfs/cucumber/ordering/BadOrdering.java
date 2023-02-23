@@ -6,6 +6,7 @@ import fr.univcotedazur.simpletcfs.exceptions.EmptyCartException;
 import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import fr.univcotedazur.simpletcfs.interfaces.Bank;
 import fr.univcotedazur.simpletcfs.interfaces.CartProcessor;
+import fr.univcotedazur.simpletcfs.interfaces.CustomerFinder;
 import fr.univcotedazur.simpletcfs.interfaces.CustomerRegistration;
 import fr.univcotedazur.simpletcfs.repositories.CustomerRepository;
 import io.cucumber.java.Before;
@@ -13,12 +14,14 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.when;
 
+@Transactional
 public class BadOrdering {
 
     @Autowired
@@ -28,12 +31,14 @@ public class BadOrdering {
     private CustomerRegistration customerRegistration;
 
     @Autowired
+    private CustomerFinder customerFinder;
+
+    @Autowired
     private CartProcessor cartProcessor;
 
     @Autowired // Spring/Cucumber bug workaround: autowired the mock declared in the Config class
     private Bank bankMock;
 
-    private Customer badBoy;
     private boolean validationRefused;
 
     @Before
@@ -44,11 +49,12 @@ public class BadOrdering {
 
     @Given("a bad customer")
     public void theBadCustomer() throws AlreadyExistingCustomerException {
-        badBoy = customerRegistration.register("BadBoy", "dummy card");
+        customerRegistration.register("BadBoy", "1234567890"); // give a consistent creditCard or get a validation exception for the ORM engine
     }
 
     @When("He validates an empty cart")
     public void validatesAnEmptyCart() {
+        Customer badBoy = customerFinder.findByName("BadBoy").get();
         try {
             cartProcessor.validate(badBoy);
         } catch (EmptyCartException e) {

@@ -1,23 +1,21 @@
 package fr.univcotedazur.simpletcfs.exceptions;
 
-import java.util.UUID;
-
 public class CustomerIdNotFoundException extends Exception {
 
-    private UUID id;
+    private Long id;
 
-    public CustomerIdNotFoundException(UUID id) {
+    public CustomerIdNotFoundException(Long id) {
         this.id = id;
     }
 
     public CustomerIdNotFoundException() {
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

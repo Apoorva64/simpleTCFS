@@ -1,12 +1,10 @@
 package fr.univcotedazur.simpletcfs.cli.model;
 
-import java.util.UUID;
-
 // A cli side class being equivalent to the backend CustomerDTO, in terms of attributes
 // so that the automatic JSON (de-)/serialization will make the two compatible on each side
 public class CliCustomer {
 
-    private UUID id;
+    private Long id;
     private String name;
     private String creditCard;
 
@@ -15,11 +13,11 @@ public class CliCustomer {
         this.creditCard = creditCard;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

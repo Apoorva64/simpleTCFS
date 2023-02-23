@@ -6,16 +6,17 @@ import fr.univcotedazur.simpletcfs.interfaces.CustomerFinder;
 import fr.univcotedazur.simpletcfs.interfaces.CustomerRegistration;
 import fr.univcotedazur.simpletcfs.repositories.CustomerRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional // default behavior : rollback DB operations after each test (even if it fails)
 class CustomerRegistryTest {
 
     @Autowired
@@ -28,12 +29,7 @@ class CustomerRegistryTest {
     private CustomerFinder customerFinder;
 
     private String name = "John";
-    private String creditCard = "credit card number";
-
-    @BeforeEach
-    void setUp() {
-        customerRepository.deleteAll();
-    }
+    private String creditCard = "1234567890";
 
     @Test
     public void unknownCustomer() {

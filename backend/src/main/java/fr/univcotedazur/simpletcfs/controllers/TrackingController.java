@@ -25,7 +25,7 @@ public class TrackingController {
     private Tracker tracker;
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<String> getOrderStatus(@PathVariable("orderId") UUID orderId) {
+    public ResponseEntity<String> getOrderStatus(@PathVariable("orderId") Long orderId) {
         OrderStatus status = null;
         try {
             status = tracker.retrieveStatus(orderId);

@@ -1,6 +1,6 @@
 package fr.univcotedazur.simpletcfs.connectors;
 
-import fr.univcotedazur.simpletcfs.connectors.externaldto.externaldto.PaymentDTO;
+import fr.univcotedazur.simpletcfs.connectors.externaldto.PaymentDTO;
 import fr.univcotedazur.simpletcfs.entities.Customer;
 import fr.univcotedazur.simpletcfs.interfaces.Bank;
 import org.springframework.beans.factory.annotation.Value;

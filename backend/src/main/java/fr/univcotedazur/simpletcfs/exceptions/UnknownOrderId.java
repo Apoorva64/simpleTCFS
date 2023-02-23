@@ -1,23 +1,21 @@
 package fr.univcotedazur.simpletcfs.exceptions;
 
-import java.util.UUID;
-
 public class UnknownOrderId extends Exception {
 
-    private UUID orderId;
+    private Long orderId;
 
-    public UnknownOrderId(UUID id) {
+    public UnknownOrderId(Long id) {
         orderId = id;
     }
 
     public UnknownOrderId() {
     }
 
-    public UUID getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(UUID orderId) {
+    public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 }

@@ -8,14 +8,15 @@ import fr.univcotedazur.simpletcfs.interfaces.Tracker;
 import fr.univcotedazur.simpletcfs.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
+@Transactional
 public class Kitchen implements OrderProcessing, Tracker {
 
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
     public Kitchen(OrderRepository orderRepository) {
@@ -25,15 +26,14 @@ public class Kitchen implements OrderProcessing, Tracker {
     @Override
     public void process(Order order) {
         order.setStatus(OrderStatus.IN_PROGRESS);
-        orderRepository.save(order, order.getId());
     }
 
     @Override
-    public OrderStatus retrieveStatus(UUID orderId) throws UnknownOrderId {
-        Optional<Order> orderOpt = orderRepository.findById(orderId);
-        if (orderOpt.isEmpty())
+    public OrderStatus retrieveStatus(Long orderId) throws UnknownOrderId {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isEmpty())
             throw new UnknownOrderId(orderId);
-        return orderOpt.get().getStatus();
+        return order.get().getStatus();
     }
 
 }

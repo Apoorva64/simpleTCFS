@@ -37,24 +37,24 @@ public class CartController {
     private CustomerFinder finder;
 
     @PostMapping(path = CART_URI, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> updateCustomerCart(@PathVariable("customerId") UUID customerId, @RequestBody Item it) throws CustomerIdNotFoundException, NegativeQuantityException {
+    public ResponseEntity<Item> updateCustomerCart(@PathVariable("customerId") Long customerId, @RequestBody Item it) throws CustomerIdNotFoundException, NegativeQuantityException {
         int newQuantity = cart.update(retrieveCustomer(customerId), it);
         return ResponseEntity.ok(new Item(it.getCookie(), newQuantity));
     }
 
     @GetMapping(CART_URI)
-    public ResponseEntity<Set<Item>> getCustomerCartContents(@PathVariable("customerId") UUID customerId) throws CustomerIdNotFoundException {
+    public ResponseEntity<Set<Item>> getCustomerCartContents(@PathVariable("customerId") Long customerId) throws CustomerIdNotFoundException {
         return ResponseEntity.ok(processor.contents(retrieveCustomer(customerId)));
     }
 
     @PostMapping(path = CART_URI + "/validate")
-    public ResponseEntity<String> validate(@PathVariable("customerId") UUID customerId) throws CustomerIdNotFoundException, EmptyCartException, PaymentException {
+    public ResponseEntity<String> validate(@PathVariable("customerId") Long customerId) throws CustomerIdNotFoundException, EmptyCartException, PaymentException {
         Order order = processor.validate(retrieveCustomer(customerId));
         return ResponseEntity.ok().body("Order " + order.getId() + " (amount " + order.getPrice() +
                 ") is validated");
     }
 
-    private Customer retrieveCustomer(UUID customerId) throws CustomerIdNotFoundException {
+    private Customer retrieveCustomer(Long customerId) throws CustomerIdNotFoundException {
         Optional<Customer> custopt = finder.findById(customerId);
         if (custopt.isEmpty()) {
             throw new CustomerIdNotFoundException(customerId);

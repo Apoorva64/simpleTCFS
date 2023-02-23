@@ -8,12 +8,14 @@ import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import fr.univcotedazur.simpletcfs.interfaces.*;
 import fr.univcotedazur.simpletcfs.repositories.CustomerRepository;
 import fr.univcotedazur.simpletcfs.repositories.OrderRepository;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.when;
 
+@Transactional
 public class OrderingCookies {
 
     @Autowired
@@ -46,9 +49,8 @@ public class OrderingCookies {
     @Autowired // Spring/Cucumber bug workaround: autowired the mock declared in the Config class
     private Bank bankMock;
 
-    private Customer customer;
-    private Set<Item> cartContents;
-    private Order order;
+    private String customerName;
+    private Long orderId;
 
     @Before
     public void settingUpContext() throws PaymentException {
@@ -64,56 +66,60 @@ public class OrderingCookies {
 
     @When("{string} asks for his cart contents")
     public void customerAsksForHisCartContents(String customerName) {
-        customer = customerFinder.findByName(customerName).get();
-        cartContents = cartProcessor.contents(customer);
+            this.customerName = customerName;
     }
 
     @Then("^there (?:is|are) (\\d+) items? inside the cart$") // Regular Expressions, not Cucumber expression
     // Note that you cannot mix Cucumber expression such as {int} with regular expressions
     public void thereAreItemsInsideTheCart(int nbItems) {
-        assertEquals(nbItems, cartContents.size());
+        Customer customer = customerFinder.findByName(customerName).get();
+        assertEquals(nbItems, customer.getCart().size());
     }
 
     @When("{string} orders {int} x {string}")
     public void customerOrders(String customerName, int howMany, String recipe) throws NegativeQuantityException {
-        customer = customerFinder.findByName(customerName).get();
+        this.customerName = customerName;
+        Customer customer = customerFinder.findByName(customerName).get();
         Cookies cookie = Cookies.valueOf(recipe);
         cartModifier.update(customer, new Item(cookie, howMany));
     }
 
     @And("the cart contains the following item: {int} x {string}")
     public void theCartContainsTheFollowingItem(int howMany, String recipe) {
+        Customer customer = customerFinder.findByName(customerName).get();
         Item expected = new Item(Cookies.valueOf(recipe), howMany);
-        assertTrue(cartContents.contains(expected));
+        assertTrue(customer.getCart().contains(expected));
     }
 
     @And("{string} decides not to buy {int} x {string}")
     public void customerDecidesNotToBuy(String customerName, int howMany, String recipe) throws NegativeQuantityException {
-        customer = customerFinder.findByName(customerName).get();
+        Customer customer = customerFinder.findByName(customerName).get();
         Cookies cookie = Cookies.valueOf(recipe);
         cartModifier.update(customer, new Item(cookie, -howMany));
     }
 
     @Then("the price of {string}'s cart is equals to {double}")
     public void thePriceOfSebSCartIsEqualsTo(String customerName, double expectedPrice) {
-        customer = customerFinder.findByName(customerName).get();
+        Customer customer = customerFinder.findByName(customerName).get();
         assertEquals(expectedPrice, cartProcessor.price(customer), 0.01);
     }
 
     @And("{string} validates the cart and pays through the bank")
     public void validatesTheCart(String customerName) throws EmptyCartException, PaymentException {
-        customer = customerFinder.findByName(customerName).get();
-        order = cartProcessor.validate(customer);
+        Customer customer = customerFinder.findByName(customerName).get();
+        orderId = cartProcessor.validate(customer).getId();
     }
 
     @Then("the order amount is equals to {double}")
     public void theOrderAmountIsEqualsTo(double expectedPrice) {
+        Order order = orderRepository.getById(orderId); // This shows that some business component handling Orders is missing
         assertEquals(expectedPrice, order.getPrice(), 0.01);
     }
 
     @Then("the order status is {string}")
     public void theOrderStatusIs(String state) {
-        assertEquals(OrderStatus.valueOf(state), order.getStatus());
+        Order order = orderRepository.getById(orderId);
+        assertEquals(OrderStatus.valueOf(state),order.getStatus());
     }
 
 }

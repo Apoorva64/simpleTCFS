@@ -9,28 +9,26 @@ import fr.univcotedazur.simpletcfs.exceptions.PaymentException;
 import fr.univcotedazur.simpletcfs.interfaces.CartModifier;
 import fr.univcotedazur.simpletcfs.interfaces.CartProcessor;
 import fr.univcotedazur.simpletcfs.interfaces.Payment;
-import fr.univcotedazur.simpletcfs.repositories.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @Component
+@Transactional // All public methods are wrapped in a transaction with commit at end + rollback in case of exceptions
 public class CartHandler implements CartModifier, CartProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(CartHandler.class);
 
-    CustomerRepository customerRepository;
-
     Payment payment;
 
     @Autowired
-    public CartHandler(CustomerRepository customerRepository, Payment payment) {
-        this.customerRepository = customerRepository;
+    public CartHandler(Payment payment) {
         this.payment = payment;
     }
 
@@ -79,9 +77,7 @@ public class CartHandler implements CartModifier, CartProcessor {
             throw new EmptyCartException(c.getName());
         Order newOrder = payment.payOrder(c, contents(c));
         c.setCart(new HashSet<>());
-        customerRepository.save(c, c.getId());
         return newOrder;
     }
-
 
 }

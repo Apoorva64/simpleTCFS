@@ -1,21 +1,35 @@
 package fr.univcotedazur.simpletcfs.entities;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import javax.persistence.*;
+        import javax.validation.constraints.NotNull;
+        import java.util.Objects;
+        import java.util.Set;
 
+@Entity
+@Table(name= "orders")
 public class Order {
 
-    private UUID id;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    @NotNull
     private Customer customer;
+
+    @ElementCollection
     private Set<Item> items;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     public Order(Customer customer, Set<Item> items) {
         this.customer = customer;
         this.items = items;
         this.status = OrderStatus.VALIDATED;
-        this.id = UUID.randomUUID();
+    }
+
+    public Order() {
     }
 
     public OrderStatus getStatus() {
@@ -26,7 +40,7 @@ public class Order {
         this.status = status;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -49,13 +63,8 @@ public class Order {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Order)) return false;
-        Order order = (Order) o;
-        if (!getId().equals(order.getId())) return false;
-        if (!getCustomer().equals(order.getCustomer())) return false;
-        if (!getItems().equals(order.getItems())) return false;
-        return getStatus() == order.getStatus();
-
+        if (!(o instanceof Order order)) return false;
+        return Objects.equals(customer, order.customer) && Objects.equals(items, order.items) && status == order.status;
     }
 
     @Override

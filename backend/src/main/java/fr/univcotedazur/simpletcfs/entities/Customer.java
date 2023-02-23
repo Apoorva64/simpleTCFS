@@ -1,24 +1,41 @@
 package fr.univcotedazur.simpletcfs.entities;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
+@Entity
 public class Customer {
 
-    private UUID id;
+    @Id
+    @GeneratedValue
+    private Long id; // Whether Long/Int or UUID are better primary keys, exposable outside is a vast issue, keep it simple here
+
+    @NotBlank
+    @Column(unique = true)
     private String name;
+
+    @Pattern(regexp = "\\d{10}+", message = "Invalid creditCardNumber")
     private String creditCard;
+
+    @OneToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY, mappedBy = "customer")
+    private Set<Order> orders = new HashSet<>();
+
+    @ElementCollection
     private Set<Item> cart = new HashSet<>();
+
+    public Customer() {
+    }
 
     public Customer(String n, String c) {
         this.name = n;
         this.creditCard = c;
-        this.id = UUID.randomUUID();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -38,6 +55,14 @@ public class Customer {
         this.creditCard = creditCard;
     }
 
+    public void add(Order o) {
+        this.orders.add(o);
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
     public Set<Item> getCart() {
         return cart;
     }
@@ -49,16 +74,12 @@ public class Customer {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Customer)) return false;
-        Customer customer = (Customer) o;
-        if (!getId().equals(customer.getId())) return false;
-        if (!getName().equals(customer.getName())) return false;
-        return getCreditCard().equals(customer.getCreditCard());
+        if (!(o instanceof Customer customer)) return false;
+        return Objects.equals(name, customer.name) && Objects.equals(creditCard, customer.creditCard);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, creditCard);
     }
-
 }

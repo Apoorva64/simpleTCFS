@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,13 +18,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@Transactional
 class KitchenTest {
-
-    @Autowired
-    CustomerRepository customerRepository;
-
-    @Autowired
-    OrderRepository orderRepository;
 
     @Autowired
     private CustomerRegistration registry;
@@ -34,22 +30,24 @@ class KitchenTest {
     @Autowired
     private Tracker tracker;
 
-    private Set<Item> items;
-    private Customer john;
+    @Autowired
+    private OrderRepository orderRepository;
+
+    private Order inProgress;
 
     @BeforeEach
     public void setUpContext() throws Exception {
-        customerRepository.deleteAll();
-        orderRepository.deleteAll();
-        items = new HashSet<>();
+        Set<Item> items = new HashSet<>();
         items.add(new Item(Cookies.CHOCOLALALA, 3));
         items.add(new Item(Cookies.DARK_TEMPTATION, 2));
-        john = registry.register("john", "1234-896983");
+        Customer john = registry.register("john", "1234-896983");
+        Order newOrder = new Order(john, items);
+        john.add(inProgress);
+        inProgress = orderRepository.save(newOrder);
     }
 
     @Test
     void processCommand() throws Exception {
-        Order inProgress = new Order(john, items);
         processor.process(inProgress);
         assertEquals(OrderStatus.IN_PROGRESS, tracker.retrieveStatus(inProgress.getId()));
     }

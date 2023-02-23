@@ -4,6 +4,7 @@ import fr.univcotedazur.simpletcfs.interfaces.Bank;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
 
 @CucumberContextConfiguration
 @SpringBootTest

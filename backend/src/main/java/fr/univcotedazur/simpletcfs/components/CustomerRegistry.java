@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 @Component
 public class CustomerRegistry implements CustomerRegistration, CustomerFinder {
@@ -28,19 +26,18 @@ public class CustomerRegistry implements CustomerRegistration, CustomerFinder {
         if (findByName(name).isPresent())
             throw new AlreadyExistingCustomerException(name);
         Customer newcustomer = new Customer(name, creditCard);
-        customerRepository.save(newcustomer, newcustomer.getId());
-        return newcustomer;
+        return customerRepository.save(newcustomer);
     }
 
     @Override
     public Optional<Customer> findByName(String name) {
-        return StreamSupport.stream(customerRepository.findAll().spliterator(), false)
-                .filter(cust -> name.equals(cust.getName())).findAny();
+        return customerRepository.findCustomerByName(name);
     }
 
     @Override
-    public Optional<Customer> findById(UUID id) {
+    public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
     }
 
 }
+

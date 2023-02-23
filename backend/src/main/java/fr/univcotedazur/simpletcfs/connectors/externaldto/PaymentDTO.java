@@ -1,4 +1,4 @@
-package fr.univcotedazur.simpletcfs.connectors.externaldto.externaldto;
+package fr.univcotedazur.simpletcfs.connectors.externaldto;
 
 // External DTO (Data Transfert Object) to POST payment to the external Bank system
 public class PaymentDTO {
