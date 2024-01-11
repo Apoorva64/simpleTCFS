@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.31.2 (a92241f79)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: bank
+  name: bank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: bank
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.31.2 (a92241f79)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/manifests-default: "true"
+        io.kompose.service: bank
+    spec:
+      containers:
+        - image: ghcr.io/apoorva64/simpletcfs/bank:latest
+          name: bank
+          ports:
+            - containerPort: 9090
+              hostPort: 9090
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}
