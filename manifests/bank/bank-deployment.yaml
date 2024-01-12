@@ -1,10 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.31.2 (a92241f79)
-  creationTimestamp: null
   labels:
     io.kompose.service: bank
   name: bank
@@ -13,15 +9,9 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: bank
-  strategy: {}
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.31.2 (a92241f79)
-      creationTimestamp: null
       labels:
-        io.kompose.network/manifests-default: "true"
         io.kompose.service: bank
     spec:
       containers:
@@ -31,6 +21,4 @@ spec:
             - containerPort: 9090
               hostPort: 9090
               protocol: TCP
-          resources: {}
       restartPolicy: Always
-status: {}
