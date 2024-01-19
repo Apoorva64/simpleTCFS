@@ -21,4 +21,8 @@ spec:
             - containerPort: 9090
               hostPort: 9090
               protocol: TCP
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "200Mi"
       restartPolicy: Always
